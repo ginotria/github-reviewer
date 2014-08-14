@@ -44,7 +44,7 @@ $(function() {
                     var raw = JSON.parse(contents);
                     console.log(raw);
                     raw.forEach(function(f) {
-                        files[f.name] = f;
+                        files[f.name.toLowerCase()] = f;
                     });
                 }
 
@@ -59,7 +59,7 @@ $(function() {
                             content: {
                                 text: function(ev) {
                                     // $tooltip = $('<h3>' + fl.name + '</h3><pre class="prettyprint linenums"></pre>');
-                                    $tooltip = $('<pre class="prettyprint linenums">');// + fl.name + '</h3><pre class="prettyprint linenums"></pre>');
+                                    $tooltip = $('<pre class="prettyprint linenums" style="font-size: 10px;">loading source code...</pre>');// + fl.name + '</h3><pre class="prettyprint linenums"></pre>');
 
                                     $tooltip.css('width', '590px');
                                     $tooltip.css({
@@ -67,13 +67,13 @@ $(function() {
                                         'font-size': '16px',
                                         'font-family': 'Courier New'
                                     });
-                                    if (localStorage[user + path]) {
-                                        $tooltip.html(localStorage[user + path]);
+                                    if (lscache.get(user + path)) {
+                                        $tooltip.html(lscache.get(user + path));
                                         return $tooltip.addClass("prettyprint linenums");
                                     }
                                     repo.read('master', path, function(err, data) {
                                         // $tooltip.html(data.replace(/\n/g, '<br />').replace(/\t/g, ' '));
-                                        localStorage[user + path] = data;
+                                        lscache.set(user + path, data);
                                         $tooltip.html(data).addClass("prettyprint linenums");
                                     });
 
@@ -118,4 +118,7 @@ $(function() {
         loadRepos(val.token, userNames, val.repo);
         return false;
     });
+    loadRepos('f349ba32081e41829c876a934df276451441403b', userNames, 'coe-seatwork-four');
+    lscache.flush();
+    prettyPrint();
 });
